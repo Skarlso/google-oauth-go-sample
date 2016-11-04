@@ -122,7 +122,6 @@ func LoginHandler(c *gin.Context) {
 	state := RandToken(32)
 	session := sessions.Default(c)
 	session.Set("state", state)
-	log.Printf("Stored session: %v\n", state)
 	session.Save()
 	link := getLoginURL(state)
 	c.HTML(http.StatusOK, "auth.tmpl", gin.H{"link": link})
