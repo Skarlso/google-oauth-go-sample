@@ -1,4 +1,4 @@
-# Google OAuth Go Sample Project - Web application
+# Google OAuth Go Sample Project - Web application
 
 Web based version of [GoProgressQuest](https://github.com/Skarlso/goprogressquest).
 
