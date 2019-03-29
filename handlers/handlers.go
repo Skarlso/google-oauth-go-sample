@@ -27,10 +27,12 @@ type Credentials struct {
 }
 
 // RandToken generates a random @l length token.
-func RandToken(l int) string {
+func RandToken(l int) (string, error) {
 	b := make([]byte, l)
-	rand.Read(b)
-	return base64.StdEncoding.EncodeToString(b)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(b), nil
 }
 
 func getLoginURL(state string) string {
@@ -43,7 +45,10 @@ func init() {
 		log.Printf("File error: %v\n", err)
 		os.Exit(1)
 	}
-	json.Unmarshal(file, &cred)
+	if err := json.Unmarshal(file, &cred); err != nil {
+		log.Println("unable to marshal data")
+		return
+	}
 
 	conf = &oauth2.Config{
 		ClientID:     cred.Cid,
@@ -56,7 +61,7 @@ func init() {
 	}
 }
 
-// IndexHandler handels /.
+// IndexHandler handles the location /.
 func IndexHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{})
 }
@@ -119,10 +124,18 @@ func AuthHandler(c *gin.Context) {
 
 // LoginHandler handles the login procedure.
 func LoginHandler(c *gin.Context) {
-	state := RandToken(32)
+	state, err := RandToken(32)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.tmpl", gin.H{"message": "Error while generating random data."})
+		return
+	}
 	session := sessions.Default(c)
 	session.Set("state", state)
-	session.Save()
+	err = session.Save()
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.tmpl", gin.H{"message": "Error while saving session."})
+		return
+	}
 	link := getLoginURL(state)
 	c.HTML(http.StatusOK, "auth.tmpl", gin.H{"link": link})
 }

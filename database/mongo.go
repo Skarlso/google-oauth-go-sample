@@ -18,7 +18,7 @@ func (mdb MongoDBConnection) SaveUser(u *structs.User) error {
 	mdb.session = mdb.GetSession()
 	defer mdb.session.Close()
 	if _, err := mdb.LoadUser(u.Email); err == nil {
-		return fmt.Errorf("User already exists!")
+		return fmt.Errorf("user already exists")
 	}
 	c := mdb.session.DB("webadventure").C("users")
 	err := c.Insert(u)

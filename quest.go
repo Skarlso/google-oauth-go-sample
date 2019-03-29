@@ -5,11 +5,16 @@ import (
 	"github.com/Skarlso/google-oauth-go-sample/middleware"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func main() {
 	router := gin.Default()
-	store := sessions.NewCookieStore([]byte(handlers.RandToken(64)))
+	token, err := handlers.RandToken(64)
+	if err != nil {
+		log.Fatal("unable to generate random token: ", err)
+	}
+	store := sessions.NewCookieStore([]byte(token))
 	store.Options(sessions.Options{
 		Path:   "/",
 		MaxAge: 86400 * 7,
@@ -31,5 +36,7 @@ func main() {
 		authorized.GET("/field", handlers.FieldHandler)
 	}
 
-	router.Run("127.0.0.1:9090")
+	if err := router.Run("127.0.0.1:9090"); err != nil {
+		log.Fatal(err)
+	}
 }
