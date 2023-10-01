@@ -1,6 +1,6 @@
 # Google OAuth Go Sample Project - Web application
 
-Web based version of [GoProgressQuest](https://github.com/Skarlso/goprogressquest).
+This is a web application that demonstrates how to do Google Oauth to log-in an authenticate users.
 
 # Installation
 
@@ -30,6 +30,9 @@ In order for the Google Authentication to work, you'll need developer credential
 
 To obtain these credentials, please navigate to this site and follow the procedure to setup a new project: [Google Developer Console](https://console.developers.google.com/iam-admin/projects).
 
+Once you have a new project, you need to create the above credentials. Navigate to the Project Page Credentials section
+and create an Oauth Client ID. Select Desktop app and you should have your Client ID like the above JSON document.
+
 ## Dependencies
 
 To gather all the libraries this project uses, simply execute from the root: `go get -v ./...`
@@ -40,5 +43,5 @@ To run it, simply build & run and navigate to http://127.0.0.1:9090/login, nothi
 
 ```
 go build
-./google-oauth-go-sample
+./oauth-sample
 ```
