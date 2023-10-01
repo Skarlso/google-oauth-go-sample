@@ -19,16 +19,19 @@ import (
 
 // Credentials which stores google ids.
 type Credentials struct {
-	Cid     string `json:"cid"`
-	Csecret string `json:"csecret"`
+	Installed struct {
+		Cid     string `json:"client_id"`
+		Csecret string `json:"client_secret"`
+	} `json:"installed"`
 }
 
 // Handlers contains the handlers and config for the handlers.
 type Handlers struct {
 	conf *oauth2.Config
+	db   *Database
 }
 
-func NewHandler() (*Handlers, error) {
+func NewHandler(db *Database) (*Handlers, error) {
 	cred := &Credentials{}
 	file, err := os.ReadFile("./creds.json")
 	if err != nil {
@@ -41,9 +44,9 @@ func NewHandler() (*Handlers, error) {
 	}
 
 	conf := &oauth2.Config{
-		ClientID:     cred.Cid,
-		ClientSecret: cred.Csecret,
-		RedirectURL:  "http://127.0.0.1:9090/auth",
+		ClientID:     cred.Installed.Cid,
+		ClientSecret: cred.Installed.Csecret,
+		RedirectURL:  "http://127.0.0.1:9090/auth", // can come from Credentials file redirect URLs.
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email", // You have to select your own scope from here -> https://developers.google.com/identity/protocols/googlescopes#google_sign-in
 		},
@@ -52,6 +55,7 @@ func NewHandler() (*Handlers, error) {
 
 	return &Handlers{
 		conf: conf,
+		db:   db,
 	}, nil
 }
 
@@ -79,7 +83,7 @@ func (h *Handlers) AuthHandler(c *gin.Context) {
 	session := sessions.Default(c)
 	retrievedState := session.Get("state")
 	queryState := c.Request.URL.Query().Get("state")
-	if retrievedState != queryState {
+	if retrievedState != nil && retrievedState != queryState {
 		log.Printf("Invalid session state: retrieved: %s; Param: %s", retrievedState, queryState)
 		c.HTML(http.StatusUnauthorized, "error.tmpl", gin.H{"message": "Invalid session state."})
 		return
@@ -88,6 +92,7 @@ func (h *Handlers) AuthHandler(c *gin.Context) {
 	code := c.Request.URL.Query().Get("code")
 	ctx, done := context.WithTimeout(context.Background(), 15*time.Second)
 	defer done()
+
 	tok, err := h.conf.Exchange(ctx, code)
 	if err != nil {
 		log.Println(err)
@@ -126,19 +131,19 @@ func (h *Handlers) AuthHandler(c *gin.Context) {
 		return
 	}
 
-	seen := false
-	db := &MongoDBConnection{}
-	if _, mongoErr := db.LoadUser(u.Email); mongoErr == nil {
-		seen = true
-	} else {
-		err = db.SaveUser(&u)
-		if err != nil {
-			log.Println(err)
-			c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Error while saving user. Please try again."})
-			return
-		}
+	if _, err := h.db.LoadUser(u.Email); err == nil {
+		c.HTML(http.StatusOK, "battle.tmpl", gin.H{"email": u.Email, "seen": true})
+		return
 	}
-	c.HTML(http.StatusOK, "battle.tmpl", gin.H{"email": u.Email, "seen": seen})
+
+	err = h.db.SaveUser(&u)
+	if err != nil {
+		log.Println(err)
+		c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Error while saving user. Please try again."})
+		return
+	}
+
+	c.HTML(http.StatusOK, "battle.tmpl", gin.H{"email": u.Email, "seen": false})
 }
 
 // LoginHandler handles the login procedure.
@@ -148,6 +153,7 @@ func (h *Handlers) LoginHandler(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.tmpl", gin.H{"message": "Error while generating random data."})
 		return
 	}
+
 	session := sessions.Default(c)
 	session.Set("state", state)
 	err = session.Save()
@@ -156,10 +162,11 @@ func (h *Handlers) LoginHandler(c *gin.Context) {
 		return
 	}
 	link := h.getLoginURL(state)
+
 	c.HTML(http.StatusOK, "auth.tmpl", gin.H{"link": link})
 }
 
-// FieldHandler is a rudementary handler for logged in users.
+// FieldHandler is a rudimentary handler for logged in users.
 func (h *Handlers) FieldHandler(c *gin.Context) {
 	session := sessions.Default(c)
 	userID := session.Get("user-id")

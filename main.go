@@ -25,7 +25,8 @@ func main() {
 	router.Static("/img", "./static/img")
 	router.LoadHTMLGlob("templates/*")
 
-	handler, err := NewHandler()
+	db := &Database{}
+	handler, err := NewHandler(db)
 	if err != nil {
 		log.Fatal("unable to load credentials: %w", err)
 	}
