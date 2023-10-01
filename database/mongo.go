@@ -14,7 +14,7 @@ type MongoDBConnection struct {
 }
 
 // SaveUser register a user so we know that we saw that user already.
-func (mdb MongoDBConnection) SaveUser(u *structs.User) error {
+func (mdb *MongoDBConnection) SaveUser(u *structs.User) error {
 	mdb.session = mdb.GetSession()
 	defer mdb.session.Close()
 	if _, err := mdb.LoadUser(u.Email); err == nil {
@@ -26,7 +26,7 @@ func (mdb MongoDBConnection) SaveUser(u *structs.User) error {
 }
 
 // LoadUser get data from a user.
-func (mdb MongoDBConnection) LoadUser(Email string) (result structs.User, err error) {
+func (mdb *MongoDBConnection) LoadUser(Email string) (result structs.User, err error) {
 	mdb.session = mdb.GetSession()
 	defer mdb.session.Close()
 	c := mdb.session.DB("webadventure").C("users")
