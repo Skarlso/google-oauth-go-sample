@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+
 	"github.com/Skarlso/google-oauth-go-sample/handlers"
 	"github.com/Skarlso/google-oauth-go-sample/middleware"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 func main() {

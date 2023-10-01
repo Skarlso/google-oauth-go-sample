@@ -1,13 +1,15 @@
 package handlers
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Skarlso/google-oauth-go-sample/database"
 	"github.com/Skarlso/google-oauth-go-sample/structs"
@@ -40,7 +42,7 @@ func getLoginURL(state string) string {
 }
 
 func init() {
-	file, err := ioutil.ReadFile("./creds.json")
+	file, err := os.ReadFile("./creds.json")
 	if err != nil {
 		log.Printf("File error: %v\n", err)
 		os.Exit(1)
@@ -68,7 +70,7 @@ func IndexHandler(c *gin.Context) {
 
 // AuthHandler handles authentication of a user and initiates a session.
 func AuthHandler(c *gin.Context) {
-	// Handle the exchange code to initiate a transport.
+	// Handle the exchange code to initiate transport.
 	session := sessions.Default(c)
 	retrievedState := session.Get("state")
 	queryState := c.Request.URL.Query().Get("state")
@@ -77,15 +79,18 @@ func AuthHandler(c *gin.Context) {
 		c.HTML(http.StatusUnauthorized, "error.tmpl", gin.H{"message": "Invalid session state."})
 		return
 	}
+
 	code := c.Request.URL.Query().Get("code")
-	tok, err := conf.Exchange(oauth2.NoContext, code)
+	ctx, done := context.WithTimeout(context.Background(), 15*time.Second)
+	defer done()
+	tok, err := conf.Exchange(ctx, code)
 	if err != nil {
 		log.Println(err)
 		c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Login failed. Please try again."})
 		return
 	}
 
-	client := conf.Client(oauth2.NoContext, tok)
+	client := conf.Client(ctx, tok)
 	userinfo, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
 	if err != nil {
 		log.Println(err)
@@ -93,13 +98,21 @@ func AuthHandler(c *gin.Context) {
 		return
 	}
 	defer userinfo.Body.Close()
-	data, _ := ioutil.ReadAll(userinfo.Body)
+
+	data, err := io.ReadAll(userinfo.Body)
+	if err != nil {
+		log.Println(err)
+		c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Failed to read request body."})
+		return
+	}
+
 	u := structs.User{}
 	if err = json.Unmarshal(data, &u); err != nil {
 		log.Println(err)
-		c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Error marshalling response. Please try agian."})
+		c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Error marshalling response. Please try again."})
 		return
 	}
+
 	session.Set("user-id", u.Email)
 	err = session.Save()
 	if err != nil {
@@ -107,8 +120,9 @@ func AuthHandler(c *gin.Context) {
 		c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Error while saving session. Please try again."})
 		return
 	}
+
 	seen := false
-	db := database.MongoDBConnection{}
+	db := &database.MongoDBConnection{}
 	if _, mongoErr := db.LoadUser(u.Email); mongoErr == nil {
 		seen = true
 	} else {
