@@ -27,14 +27,18 @@ func main() {
 	router.Static("/img", "./static/img")
 	router.LoadHTMLGlob("templates/*")
 
-	router.GET("/", handlers.IndexHandler)
-	router.GET("/login", handlers.LoginHandler)
-	router.GET("/auth", handlers.AuthHandler)
+	handler, err := handlers.NewHandler()
+	if err != nil {
+		log.Fatal("unable to load credentials: %w", err)
+	}
+	router.GET("/", handler.IndexHandler)
+	router.GET("/login", handler.LoginHandler)
+	router.GET("/auth", handler.AuthHandler)
 
 	authorized := router.Group("/battle")
 	authorized.Use(middleware.AuthorizeRequest())
 	{
-		authorized.GET("/field", handlers.FieldHandler)
+		authorized.GET("/field", handler.FieldHandler)
 	}
 
 	if err := router.Run("127.0.0.1:9090"); err != nil {
