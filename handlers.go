@@ -1,4 +1,4 @@
-package handlers
+package main
 
 import (
 	"context"
@@ -11,8 +11,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/Skarlso/google-oauth-go-sample/database"
-	"github.com/Skarlso/google-oauth-go-sample/structs"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
@@ -113,7 +111,7 @@ func (h *Handlers) AuthHandler(c *gin.Context) {
 		return
 	}
 
-	u := structs.User{}
+	u := User{}
 	if err = json.Unmarshal(data, &u); err != nil {
 		log.Println(err)
 		c.HTML(http.StatusBadRequest, "error.tmpl", gin.H{"message": "Error marshalling response. Please try again."})
@@ -129,7 +127,7 @@ func (h *Handlers) AuthHandler(c *gin.Context) {
 	}
 
 	seen := false
-	db := &database.MongoDBConnection{}
+	db := &MongoDBConnection{}
 	if _, mongoErr := db.LoadUser(u.Email); mongoErr == nil {
 		seen = true
 	} else {

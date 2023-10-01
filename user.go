@@ -1,4 +1,4 @@
-package structs
+package main
 
 // User is a retrieved and authenticated user.
 type User struct {

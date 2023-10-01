@@ -1,4 +1,4 @@
 .DS_Store
 creds.json
 .idea
-./oauth-sample
+oauth-sample

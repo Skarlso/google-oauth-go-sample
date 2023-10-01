@@ -3,15 +3,13 @@ package main
 import (
 	"log"
 
-	"github.com/Skarlso/google-oauth-go-sample/handlers"
-	"github.com/Skarlso/google-oauth-go-sample/middleware"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
-	token, err := handlers.RandToken(64)
+	token, err := RandToken(64)
 	if err != nil {
 		log.Fatal("unable to generate random token: ", err)
 	}
@@ -27,7 +25,7 @@ func main() {
 	router.Static("/img", "./static/img")
 	router.LoadHTMLGlob("templates/*")
 
-	handler, err := handlers.NewHandler()
+	handler, err := NewHandler()
 	if err != nil {
 		log.Fatal("unable to load credentials: %w", err)
 	}
@@ -36,7 +34,7 @@ func main() {
 	router.GET("/auth", handler.AuthHandler)
 
 	authorized := router.Group("/battle")
-	authorized.Use(middleware.AuthorizeRequest())
+	authorized.Use(AuthorizeRequest())
 	{
 		authorized.GET("/field", handler.FieldHandler)
 	}

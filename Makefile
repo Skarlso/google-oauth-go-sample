@@ -14,7 +14,7 @@ GO_LDFLAGS_STATIC="-s -w $(CTIMEVAR) -extldflags -static"
 ##@ Build
 
 build: ## Builds a single binary given the current OS
-	go build -o $(NAME) main.go
+	go build -o $(NAME) ./...
 
 ##@ Testing
 

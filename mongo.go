@@ -1,9 +1,8 @@
-package database
+package main
 
 import (
 	"fmt"
 
-	"github.com/Skarlso/google-oauth-go-sample/structs"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -13,7 +12,7 @@ type MongoDBConnection struct {
 }
 
 // SaveUser register a user so we know that we saw that user already.
-func (mdb *MongoDBConnection) SaveUser(u *structs.User) error {
+func (mdb *MongoDBConnection) SaveUser(u *User) error {
 	session, err := mdb.GetSession()
 	if err != nil {
 		return fmt.Errorf("failed to get session: %w", err)
@@ -28,14 +27,14 @@ func (mdb *MongoDBConnection) SaveUser(u *structs.User) error {
 }
 
 // LoadUser get data from a user.
-func (mdb *MongoDBConnection) LoadUser(Email string) (*structs.User, error) {
+func (mdb *MongoDBConnection) LoadUser(Email string) (*User, error) {
 	session, err := mdb.GetSession()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get session: %w", err)
 	}
 	defer session.Close()
 
-	result := &structs.User{}
+	result := &User{}
 	c := session.DB("webadventure").C("users")
 	err = c.Find(bson.M{"email": Email}).One(&result)
 
