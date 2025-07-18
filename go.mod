@@ -1,13 +1,14 @@
 module github.com/Skarlso/google-oauth-go-sample
 
-go 1.21
+go 1.23.0
+
 toolchain go1.24.1
 
 require (
 	github.com/dgraph-io/badger/v4 v4.2.0
 	github.com/gin-gonic/contrib v0.0.0-20190302003538-54ff787f7c73
 	github.com/gin-gonic/gin v1.9.1
-	golang.org/x/oauth2 v0.0.0-20190319182350-c85d3e98c914
+	golang.org/x/oauth2 v0.27.0
 )
 
 require (
@@ -52,7 +53,6 @@ require (
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
-	google.golang.org/appengine v1.4.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
