@@ -86,12 +86,16 @@ button:active, .btn:active {
     color: #4285f4;
     text-decoration: none;
     font-weight: 500;
-    margin-top: 20px;
+    margin: 10px 15px;
     display: inline-block;
 }
 
 .nav-link:hover {
     text-decoration: underline;
+}
+
+.nav-links {
+    margin-top: 20px;
 }
 
 @media (max-width: 480px) {

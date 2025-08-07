@@ -58,6 +58,7 @@ func main() {
 	router.GET("/", handler.IndexHandler)
 	router.GET("/login", handler.LoginHandler)
 	router.GET("/auth", handler.AuthHandler)
+	router.GET("/logout", handler.LogoutHandler)
 
 	authorized := router.Group("/battle")
 	authorized.Use(AuthorizeRequest())

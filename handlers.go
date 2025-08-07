@@ -196,3 +196,25 @@ func (h *Handlers) FieldHandler(c *gin.Context) {
 	userID := session.Get("user-id")
 	c.HTML(http.StatusOK, "field.tmpl", gin.H{"user": userID})
 }
+
+// LogoutHandler handles user logout by clearing the session.
+func (h *Handlers) LogoutHandler(c *gin.Context) {
+	logger := slog.Default()
+	session := sessions.Default(c)
+	
+	userID := session.Get("user-id")
+	if userID != nil {
+		logger.Info("User logged out", "user", userID)
+	}
+	
+	// Clear all session data
+	session.Clear()
+	if err := session.Save(); err != nil {
+		logger.Error("Failed to clear session", "error", err)
+		c.HTML(http.StatusInternalServerError, "error.tmpl", gin.H{"message": "Error during logout. Please try again."})
+		return
+	}
+	
+	// Redirect to home page with a success message
+	c.HTML(http.StatusOK, "logout.tmpl", gin.H{})
+}

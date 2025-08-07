@@ -54,9 +54,12 @@ go build .
 
 Then navigate to http://127.0.0.1:9090 in your browser.
 
+The protected area is `/battle/field`.
+
 # Showcase
 
 ![welcome](imgs/welcome.png)
 ![error](imgs/error.png)
 ![logged-in](imgs/logged-in.png)
 ![battle](imgs/battle-arena.png)
+![logout](imgs/logout.png)
