@@ -13,11 +13,16 @@ func AuthorizeRequest() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		logger := slog.Default()
 		session := sessions.Default(c)
-		userID := session.Get("user-id")
 		
+		// Handle potential session errors gracefully
+		userID := session.Get("user-id")
 		if userID == nil {
+			// Clear any corrupted session data
+			session.Clear()
+			session.Save()
+			
 			logger.Warn("Unauthorized access attempt", "path", c.Request.URL.Path, "ip", c.ClientIP())
-			c.HTML(http.StatusUnauthorized, "error.tmpl", gin.H{"message": "Please login to access this page."})
+			c.HTML(http.StatusUnauthorized, "error.tmpl", gin.H{"message": "Your session has expired. Please login again."})
 			c.Abort()
 			return
 		}

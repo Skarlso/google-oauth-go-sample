@@ -12,7 +12,7 @@ go mod download
 
 ## Google
 
-In order for the Google Authentication to work, you'll need developer credentials which the this application gathers from a file in the root directory called `creds.json`. The structure of this file should be like this:
+In order for the Google Authentication to work, you'll need developer credentials which this application gathers from a file in the root directory called `creds.json`. The structure of this file should be like this:
 
 ```json
 {
@@ -40,6 +40,8 @@ To get these credentials:
 6. Add `http://127.0.0.1:9090/auth` to "Authorized redirect URIs"
 7. Download the credentials as `creds.json` and place it in the project root
 
+**Note:**: The application uses a FIXED session key for development. In production, set a secure 32-byte session key via environment variable or configuration.
+
 ## Running
 
 ```bash
@@ -51,3 +53,10 @@ go build .
 ```
 
 Then navigate to http://127.0.0.1:9090 in your browser.
+
+# Showcase
+
+![welcome](imgs/welcome.png)
+![error](imgs/error.png)
+![logged-in](imgs/logged-in.png)
+![battle](imgs/battle-arena.png)

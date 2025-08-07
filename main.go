@@ -24,14 +24,17 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	router.Use(sessionErrorHandler())
 
-	token, err := RandToken(64)
-	if err != nil {
-		logger.Error("unable to generate random token", "error", err)
+	// Use a fixed key for sessions to prevent invalidation on restart
+	// In production, this should come from environment variables or a secure key store
+	sessionKey := "your-secret-key-here-change-in-production-32-bytes-long"
+	if len(sessionKey) < 32 {
+		logger.Error("session key must be at least 32 bytes long")
 		os.Exit(1)
 	}
 
-	store := cookie.NewStore([]byte(token))
+	store := cookie.NewStore([]byte(sessionKey))
 	store.Options(sessions.Options{
 		Path:     "/",
 		MaxAge:   86400 * 7,
@@ -92,4 +95,23 @@ func main() {
 	}
 
 	logger.Info("Server exiting")
+}
+
+// sessionErrorHandler handles session-related errors gracefully
+func sessionErrorHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer func() {
+			if r := recover(); r != nil {
+				if err, ok := r.(error); ok {
+					slog.Default().Warn("Session error recovered", "error", err, "path", c.Request.URL.Path)
+					// Clear potentially corrupted session and redirect to home
+					if session := sessions.Default(c); session != nil {
+						session.Clear()
+						session.Save()
+					}
+				}
+			}
+		}()
+		c.Next()
+	}
 }
