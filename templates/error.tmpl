@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<link rel="icon"
-      type="image/png"
-      href="/img/favicon.ico" />
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google OAuth Sample - Error</title>
+    <link rel="icon" type="image/png" href="/img/favicon.ico">
     <link rel="stylesheet" href="/css/main.css">
-  </head>
-  <body>
-    <h1>{{ .message }}</h1>
-  </body>
+</head>
+<body>
+    <div class="container">
+        <h1 class="error-title">Oops! Something went wrong</h1>
+        <p style="color: #666; margin-bottom: 20px;">{{ .message }}</p>
+        <a href="/" class="btn">Try Again</a>
+    </div>
+</body>
 </html>

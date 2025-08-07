@@ -1,16 +1,18 @@
-# Google OAuth Go Sample Project - Web application
+# Google OAuth Go Sample
 
-This is a web application that demonstrates how to do Google Oauth to log-in an authenticate users.
+## Installation
 
-# Installation
+```bash
+git clone https://github.com/Skarlso/google-oauth-go-sample
+cd google-oauth-go-sample
+go mod download
+```
 
-Simply `go get github.com/Skarlso/google-oauth-go-sample`.
-
-# Setup
+## Setup
 
 ## Google
 
-In order for the Google Authentication to work, you'll need developer credentials which the this application gathers from a file in the root directory called `creds.json`. The structure of this file should be like this:
+In order for the Google Authentication to work, you'll need developer credentials which this application gathers from a file in the root directory called `creds.json`. The structure of this file should be like this:
 
 ```json
 {
@@ -28,20 +30,36 @@ In order for the Google Authentication to work, you'll need developer credential
 }
 ```
 
-To obtain these credentials, please navigate to this site and follow the procedure to setup a new project: [Google Developer Console](https://console.developers.google.com/iam-admin/projects).
+To get these credentials:
 
-Once you have a new project, you need to create the above credentials. Navigate to the Project Page Credentials section
-and create an Oauth Client ID. Select Desktop app and you should have your Client ID like the above JSON document.
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Google+ API
+4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
+5. Choose "Web application" as the application type
+6. Add `http://127.0.0.1:9090/auth` to "Authorized redirect URIs"
+7. Download the credentials as `creds.json` and place it in the project root
 
-## Dependencies
+**Note:**: The application uses a FIXED session key for development. In production, set a secure 32-byte session key via environment variable or configuration.
 
-To gather all the libraries this project uses, simply execute from the root: `go get -v ./...`
+## Running
 
-# Running
+```bash
+# Build the application
+go build .
 
-To run it, simply build & run and navigate to http://127.0.0.1:9090/login, nothing else should be required.
-
+# Run the server
+./google-oauth-go-sample
 ```
-go build
-./oauth-sample
-```
+
+Then navigate to http://127.0.0.1:9090 in your browser.
+
+The protected area is `/battle/field`.
+
+# Showcase
+
+![welcome](imgs/welcome.png)
+![error](imgs/error.png)
+![logged-in](imgs/logged-in.png)
+![battle](imgs/battle-arena.png)
+![logout](imgs/logout.png)

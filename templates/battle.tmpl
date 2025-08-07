@@ -1,16 +1,31 @@
 <!DOCTYPE html>
-<link rel="icon"
-      type="image/png"
-      href="/img/favicon.ico" />
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google OAuth Sample - Dashboard</title>
+    <link rel="icon" type="image/png" href="/img/favicon.ico">
     <link rel="stylesheet" href="/css/main.css">
-  </head>
-  <body>
-    {{if .seen}}
-        <h1>Welcome back to the battlefield '{{ .email }}'.</h1>
-    {{else}}
-        <h1>Welcome to the battlefield '{{ .email }}'.</h1>
-    {{end}}
-  </body>
+</head>
+<body>
+    <div class="container">
+        {{if .seen}}
+            <h1 class="welcome-title">Welcome back!</h1>
+            <p>Great to see you again.</p>
+        {{else}}
+            <h1 class="welcome-title">Welcome!</h1>
+            <p>Thanks for signing up. You're now authenticated!</p>
+        {{end}}
+        
+        <div class="user-info">
+            <p class="user-email">{{ .email }}</p>
+        </div>
+        
+        <a href="/battle/field" class="btn">Enter Protected Area</a>
+        <div class="nav-links">
+            <a href="/logout" class="nav-link" style="color: #e53e3e;">Logout</a>
+            <a href="/" class="nav-link">← Back to Home</a>
+        </div>
+    </div>
+</body>
 </html>
