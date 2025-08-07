@@ -1,26 +1,110 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    background-image: url("/img/background.png");
-    background-color: #cccccc;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
 }
 
 h1 {
-    text-align: center;
-    /*color: green;*/
-    /*text-decoration: overline;*/
-    text-shadow: 2px 2px #ff0000;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    font-weight: 600;
 }
 
-button {
-    background-color: #4CAF50; /* Green */
+.welcome-title {
+    color: #4a5568;
+    margin-bottom: 30px;
+}
+
+.error-title {
+    color: #e53e3e;
+    margin-bottom: 20px;
+}
+
+button, .btn {
+    background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc05 75%, #ea4335 100%);
     border: none;
     color: white;
-    padding: 15px 32px;
-    text-align: center;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
-    border-radius: 12px;
-    position: absolute;
-    top: 45%;
-    left: 42%;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+button:hover, .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+}
+
+button:active, .btn:active {
+    transform: translateY(0);
+}
+
+.user-info {
+    background: #f7fafc;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    border-left: 4px solid #4285f4;
+}
+
+.user-email {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.nav-link {
+    color: #4285f4;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    button, .btn {
+        min-width: 160px;
+        padding: 10px 20px;
+    }
 }
